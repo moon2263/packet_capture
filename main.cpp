@@ -24,7 +24,7 @@ struct ipH{
 	u_char ip_reserved_zero:1;
 	u_char ip_frag_offset1;
 	u_char ip_ttl;
-	u_char ip_protocal;
+	u_char ip_protocol;
 	u_short ip_checksum;
 	struct in_addr ip_src,ip_dst;
 };
@@ -133,7 +133,7 @@ u_char show_ip_header(struct ipH * ip_header)
 {
 	printf("[*] Source IP : %s\n", inet_ntoa(ip_header->ip_src));
 	printf("[*] Dest IP : %s\n", inet_ntoa(ip_header->ip_dst));
-	return ip_header->ip_protocal;
+	return ip_header->ip_protocol;
 }
 
 uint8_t show_tcp_header(struct tcp * tcp_header)
