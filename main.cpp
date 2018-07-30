@@ -54,7 +54,7 @@ struct tcp{
 u_int16_t show_ether_header(struct ethernet *);
 u_char show_ip_header(struct ipH *);
 u_int8_t show_tcp_header(struct tcp * );
-void show_data(u_char *,int,int,int);
+void show_data(u_char *,int);
 void print_mac_addr(u_char * mac_addr);
 
 void usage() {
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
 		struct ethernet *ether_header;
 		struct ipH * ip_header;
 		struct tcp * tcp_header;
-		int total_len = 0, ip_tcp_offset = 0, tcp_data_offset = 0;
+		int total_len = 0, ip_tcp_offset = 0, tcp_data_offset = 0,data_len=0;
 		int res = pcap_next_ex(handle, &header, &packet);
 		if (res == 0) continue;
 		if (res == -1 || res == -2) break;
@@ -100,7 +100,8 @@ int main(int argc, char* argv[]) {
 				show_tcp_header(tcp_header);
 				if(tcp_data_offset > 0)
 				{
-					show_data((u_char *)tcp_header+tcp_data_offset,total_len,ip_tcp_offset,tcp_data_offset);
+					data_len = total_len-ETHER_IP_OFFSET-ip_tcp_offset-tcp_data_offset;
+					show_data((u_char *)tcp_header+tcp_data_offset,data_len);
 				}
 			}
 		}
@@ -143,9 +144,8 @@ uint8_t show_tcp_header(struct tcp * tcp_header)
 	return tcp_header->th_off;
 }
 
-void show_data(u_char * data,int total_len,int ip_tcp_offset,int tcp_data_offset)
+void show_data(u_char * data,int size)
 {
-	int size = total_len-ETHER_IP_OFFSET-ip_tcp_offset-tcp_data_offset;
 	for(int i = 0;i<size;i++)
 	{
 		if(i>16) break;
